@@ -1,0 +1,67 @@
+DEFINE STRUCT Mahasiswa:
+  nim, nama: string
+  tugas, uts, uas, nilaiAkhir: real
+  grade: char
+  status: string
+
+FUNCTION isValidNilai(x):
+  RETURN (x >= 0 AND x <= 100)
+
+FUNCTION hitungNilaiAkhir(tugas, uts, uas):
+  RETURN 0.30*tugas + 0.30*uts + 0.40*uas
+
+FUNCTION konversiGrade(na):
+  IF na >= 85 RETURN 'A'
+  ELSE IF na >= 75 RETURN 'B'
+  ELSE IF na >= 65 RETURN 'C'
+  ELSE IF na >= 50 RETURN 'D'
+  ELSE RETURN 'E'
+
+FUNCTION statusLulus(na):
+  IF na >= 65 RETURN "Lulus"
+  ELSE RETURN "Tidak Lulus"
+
+PROCEDURE inputMahasiswa(data):
+  READ jumlah > 0
+  FOR i FROM 1 TO jumlah:
+    READ nim, nama
+    REPEAT READ tugas UNTIL isValidNilai(tugas)
+    REPEAT READ uts   UNTIL isValidNilai(uts)
+    REPEAT READ uas   UNTIL isValidNilai(uas)
+    na = hitungNilaiAkhir(tugas, uts, uas)
+    grade = konversiGrade(na)
+    status = statusLulus(na)
+    PUSH {nim, nama, tugas, uts, uas, na, grade, status} TO data
+
+PROCEDURE tampilkanTabel(data):
+  IF data EMPTY PRINT "Belum ada data" ELSE PRINT tabel semua field
+
+PROCEDURE statistikKelas(data):
+  IF data EMPTY PRINT "Belum ada data" ELSE
+    sum = 0; maxNA = data[0].na; minNA = data[0].na; lulus = 0
+    FOR EACH m IN data:
+      sum += m.na
+      UPDATE maxNA, minNA
+      IF m.na >= 65 lulus++
+    rata = sum / SIZE(data)
+    PRINT rata, maxNA, minNA, lulus
+
+PROCEDURE ranking(data):
+  IF data EMPTY PRINT "Belum ada data" ELSE
+    SORT data BY nilaiAkhir DESC
+    PRINT tabel dengan rank
+
+MAIN:
+  data = []
+  DO:
+    PRINT menu
+    READ pilihan
+    SWITCH pilihan:
+      1 -> inputMahasiswa(data)
+      2 -> tampilkanTabel(data)
+      3 -> statistikKelas(data)
+      4 -> ranking(data)
+      5 -> CLEAR data
+      0 -> EXIT
+      DEFAULT -> PRINT "Menu tidak tersedia"
+  WHILE pilihan != 0
